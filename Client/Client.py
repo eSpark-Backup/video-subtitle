@@ -16,11 +16,11 @@ def connClose(clientSock):
 
 def sendMessage(clientSock):
     print('Type your message')
-    message = input(" -> ") + ' ' # take input
+    message = input("Client1-> ") + ' ' # take input
 
     while message.lower().strip() != 'bye':
         clientSock.send(message.encode())  # send message
-        message = input(" -> ") + ' '  # again take input
+        message = input("Client1-> ") + ' '  # again take input
 
 def mainProgram():
     clientSocket = connInit()
