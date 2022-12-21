@@ -87,7 +87,7 @@ def serverInint():
     except socket.error as e:
         print(str(e))
     print('Socket is listening..')
-    ServerSideSocket.listen(5)
+    ServerSideSocket.listen(3)
 
     return ServerSideSocket
 
@@ -101,6 +101,7 @@ def multi_threaded_client(connection):
             print('mic check 123')
             break
         connection.sendall(str.encode(response))
+    connection.send(str.encode('random'))
     connection.close()
 
 def mainProg():
@@ -112,8 +113,9 @@ def mainProg():
         start_new_thread(multi_threaded_client, (Client, ))
         ThreadCount += 1
         print('Thread Number: ' + str(ThreadCount))
-        if ThreadCount == 5:
+        if ThreadCount == 3:
             break
+    serverSock.send(str.encode('random'))
     serverSock.close()
 
 if __name__ == '__main__':

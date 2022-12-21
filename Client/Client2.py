@@ -17,7 +17,8 @@ def connClose(clientSock):
 def recvMessage(clientSock):
     msg = ''
     while True:
-        if not msg:
+        # if not msg:
+        if msg == 'random':
             print('Check')
             break
         msg = clientSock.recv(21).decode()  # send message
