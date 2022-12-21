@@ -1,4 +1,15 @@
 import socket
+import tkinter as tk
+import time
+
+#Create UI main window
+root = tk.Tk()
+root.title("Subtitle Display")
+root.geometry("1024x100");
+
+#Create text label
+text_label = tk.Label(root, font=("Arial", 16), height=4, width=50)
+text_label.pack(side = tk.TOP, pady = 30)
 
 def serverInit():
     # host = socket.gethostname()
@@ -41,12 +52,18 @@ def stringProcess(conn):
             lenOfWord = len(lastWord)
 
         if flag == 0:
-            print(("Msg.: ") + str(buffer) + ' | ')
+            # print(("Msg.: ") + str(buffer) + ' | ')
+            text_label.config(text=buffer)
+            # root.update()
             flag = 1
         else:
-            print('      ' + str(buffer))
+            # print('      ' + str(buffer))
+            text_label.config(text=buffer)
+            # root.update()
             flag = 0
 
+        time.sleep(1)
+        root.update()
         buffer = lastWord
         lastWord = ''
 
