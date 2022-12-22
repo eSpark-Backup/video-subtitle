@@ -5,11 +5,13 @@ import time
 #Create UI main window
 root = tk.Tk()
 root.title("Subtitle Display")
-root.geometry("1024x100");
+root.geometry("1920x515");
 
 #Create text label
-text_label = tk.Label(root, font=("Arial", 16), height=4, width=50)
-text_label.pack(side = tk.TOP, pady = 30)
+text_label1 = tk.Label(root, font=("Arial", 100))
+text_label1.pack()
+text_label2 = tk.Label(root, font=("Arial", 100))
+text_label2.pack()
 
 def serverInit():
     # host = socket.gethostname()
@@ -39,9 +41,16 @@ def stringProcess(conn):
     buffer = '' * 21
     flag = 0
     lastWord = ''
+    t_now = 0
 
     while True:
+        
         recvData = conn.recv(chunkSize - lenOfWord).decode()
+        if t_now + 1 <= time.time() :
+            flag = 0
+            text_label1.config(text = ' ')
+            text_label2.config(text = ' ')
+
         if not recvData:
             break
         buffer += recvData
@@ -52,17 +61,18 @@ def stringProcess(conn):
             lenOfWord = len(lastWord)
 
         if flag == 0:
-            # print(("Msg.: ") + str(buffer) + ' | ')
-            text_label.config(text=buffer)
+            print(("Msg: ") + str(buffer) + ' | ')
+            text_label1.config(text=buffer + ' | ')
             # root.update()
             flag = 1
+            t_now = time.time()
         else:
-            # print('      ' + str(buffer))
-            text_label.config(text=buffer)
+            print('      ' + str(buffer))
+            text_label2.config(text=buffer)
             # root.update()
             flag = 0
 
-        time.sleep(1)
+        # time.sleep(0.5)
         root.update()
         buffer = lastWord
         lastWord = ''
