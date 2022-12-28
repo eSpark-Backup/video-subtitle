@@ -9,6 +9,7 @@ def makeConn(hostIp, hostPort):
     cliSocket = socket.socket()
     cliSocket.connect((hostIp, int(hostPort)))
     print('The client has connected to the server.')
+    cliSocket.send('sender'.encode())
 
     return cliSocket
 
