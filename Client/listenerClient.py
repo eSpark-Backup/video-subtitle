@@ -1,18 +1,32 @@
 import socket
 
-host = input("Enter IP address: ")
-port = input("Enter port no. 1024: ")
+def inputAddr():
+    hostIp = input("Enter IP address: ")
+    hostPort = input("Enter port no. 1024: ")
+    return hostIp, hostPort
 
-clisocket = socket.socket()
+def makeConn(hostIp, hostPort):
+    cliSocket = socket.socket()
+    cliSocket.connect((hostIp, int(hostPort)))
+    print('The client has connected to the server.')
+    print('Listening to server for the messages...')
 
-clisocket.connect((host, int(port)))
-print('The client has connected to the server.')
-print('Server:', clisocket.recv(256).decode())
-print('Listening to server for the messages...')
+    return cliSocket
 
-msg = ''
-while msg.lower().strip() != 'bye':
-    msg = clisocket.recv(256).decode()
-    print("Msg.:", msg)
+def listen(cliSock):
+    msg = ''
+    while msg.lower().strip() != 'bye':
+        msg = cliSock.recv(256).decode()
+        print("Msg.:", msg)
 
-clisocket.close()
+def closeConn(cliSock):
+    cliSock.close()
+
+def mainProg():
+    hostIp, hostPort = inputAddr()
+    cliSock = makeConn(hostIp, hostPort)
+    listen(cliSock)
+    closeConn(cliSock)
+
+if __name__ == '__main__':
+    mainProg()
