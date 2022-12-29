@@ -7,9 +7,15 @@ def inputAddr():
 
 def makeConn(hostIp, hostPort):
     cliSocket = socket.socket()
-    cliSocket.connect((hostIp, int(hostPort)))
+    cliSocket.settimeout(5)
+    try:
+        cliSocket.connect((hostIp, int(hostPort)))
+    except cliSocket.error as sockErr:
+        print("Error: %s" % sockErr)
+        exit()
+
     print('The client has connected to the server.')
-    cliSocket.send('sender'.encode())
+    # cliSocket.send('sender'.encode())
 
     return cliSocket
 

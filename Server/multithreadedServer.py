@@ -15,7 +15,9 @@ def inputAddr():
 
 def serverInit(hostIp, hostPort):
     serverSocket = socket.socket()
-    serverSocket.bind((hostIp, int(hostPort)))
+    serverSocket.settimeout(5)
+    try:
+        serverSocket.bind((hostIp, int(hostPort)))
     print("Hosting on: " + hostIp + ":" + hostPort)
     serverSocket.listen(numOfClients)
     print("Waiting for connection request..")
@@ -56,22 +58,62 @@ def connAccount(client, addr):
 #         connList.insert(count, client)
 #         count += 1
 
-    # srvSock.setblocking(1)
+#     srvSock.setblocking(1)
+
+def sendMsg(flag, connList, buffer):
+    connList[flag].send(buffer.encode())
+
+def stringProcess(conn, connList):
+    chunkSize = 21
+    lenOfWord = 0
+    buffer = '' * 21
+    flag = 1
+    lastWord = ''
+
+    while True:
+        msg = conn.recv(chunkSize - lenOfWord).decode()
+        if msg.lower().strip() == 'bye':
+            for x in range(1, len(connList)):
+                connList[x].send(msg.encode())
+
+        if not msg:
+            break
+        buffer += msg
+        
+        if buffer[-1] != ' ':
+            lastWord = buffer.split()[-1]
+            buffer = buffer.rsplit(' ', 1)[0]
+            lenOfWord = len(lastWord)
+
+        if msg.lower().strip() != 'bye':
+            sendMsg(flag, connList, buffer)
+            flag += 1
+            if flag == len(connList):
+                flag = 1
+        
+        buffer = lastWord
+        lastWord = ''
 
 'New Client Thread'
 def newClientSocketHandler(cli, ip):
     print('Connection accepted from:', ip)
-    msg = ''
-    while True:
-        msg = cli.recv(256).decode()
-        if not msg:
-            break
-        print(ip, "msg:", msg)
-        for x in range(1, len(connList)):
-            connList[x].send(msg.encode())
-
+    stringProcess(cli, connList)
     if len(connList) != 0:
         connList.remove(cli)
+
+# def newClientSocketHandler(cli, ip):
+#     print('Connection accepted from:', ip)
+#     msg = ''
+#     while True:
+#         msg = cli.recv(256).decode()
+#         if not msg:
+#             break
+#         print(ip, "msg:", msg)
+#         for x in range(1, len(connList)):
+#             connList[x].send(msg.encode())
+
+#     if len(connList) != 0:
+#         connList.remove(cli)
 
 def mainProg():
     hostIp, hostPort = inputAddr()

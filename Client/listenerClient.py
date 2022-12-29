@@ -7,7 +7,14 @@ def inputAddr():
 
 def makeConn(hostIp, hostPort):
     cliSocket = socket.socket()
-    cliSocket.connect((hostIp, int(hostPort)))
+    cliSocket.settimeout(5)
+    try:
+        cliSocket.connect((hostIp, int(hostPort)))
+    except socket.error as sockErr:
+        print("Error: %s" % sockErr)
+        exit()
+
+    cliSocket.settimeout(None)
     print('The client has connected to the server.')
     print('Listening to server for the messages...')
 
