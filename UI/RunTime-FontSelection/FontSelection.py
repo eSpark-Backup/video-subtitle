@@ -19,16 +19,19 @@ font_styles = ["normal", "bold", "italic", "bold italic"]
 font_family_var = tk.StringVar(master=frame)
 font_family_var.set(font_families[1])  # default value
 font_family_menu = tk.OptionMenu(frame, font_family_var, *font_families)
+font_family_menu.config( width=20, height=1)
 
 # Create a dropdown menu for selecting the font size
 font_size_var = tk.StringVar(master=frame)
 font_size_var.set(str(font_sizes[1]))  # default value
 font_size_menu = tk.OptionMenu(frame ,font_size_var, *font_sizes)
+font_size_menu.config( width=20, height=1)
 
 # Create a dropdown menu for selecting the font style
 font_style_var = tk.StringVar(master=frame)
 font_style_var.set(font_styles[2])  # default value
 font_style_menu = tk.OptionMenu(frame ,font_style_var, *font_styles)
+font_style_menu.config( width=20, height=1)
 
 # Saving the default configuration of font
 defaultFont = (font_family_var.get(), font_size_var.get(), font_style_var.get())
