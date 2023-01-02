@@ -1,5 +1,4 @@
 import socket
-import select
 from threading import Thread
 
 # Globals
@@ -18,6 +17,11 @@ def serverInit(hostIp, hostPort):
     serverSocket.settimeout(5)
     try:
         serverSocket.bind((hostIp, int(hostPort)))
+    except socket.error as sockErr:
+        print("Error: %s" % sockErr, "Please try another port.")
+        exit()
+        
+    serverSocket.settimeout(None)
     print("Hosting on: " + hostIp + ":" + hostPort)
     serverSocket.listen(numOfClients)
     print("Waiting for connection request..")
@@ -33,48 +37,24 @@ def serverClose(conn):
     conn.close()
     print("Connection closed")
 
-# def connAccount(srvSock, client, addr):
-#     srvSock.settimeout(2)
-#     try:
-#         if srvSock.recv(256).decode().lower().strip() != 'sender':
-#             connList.insert(0, client)
-#     except srvSock.timeout as tOut:
-#         # addrList.append((addr))
-#         connList.insert(count, client)
-#         count += 1
+def connAccount(ind, client):
+    connList.insert(ind, client)
 
-#     srvSock.settimeout(None)   
-
-def connAccount(client, addr):
-    connList.append(client)
-
-# def connAccount(srvSock, client, addr):
-#     # srvSock.setblocking(0)
-#     try:
-#         if srvSock.recv(256).decode().lower().strip() != 'sender':
-#             connList.insert(0, client)
-#     except:
-#         # addrList.append((addr))
-#         connList.insert(count, client)
-#         count += 1
-
-#     srvSock.setblocking(1)
-
-def sendMsg(flag, connList, buffer):
-    connList[flag].send(buffer.encode())
+def sendMsg(node, connList, buffer):
+    connList[node].send(buffer.encode())
 
 def stringProcess(conn, connList):
     chunkSize = 21
     lenOfWord = 0
     buffer = '' * 21
-    flag = 1
+    node = 1
     lastWord = ''
 
     while True:
         msg = conn.recv(chunkSize - lenOfWord).decode()
         if msg.lower().strip() == 'bye':
             for x in range(1, len(connList)):
-                connList[x].send(msg.encode())
+                sendMsg(x, connList, msg)
 
         if not msg:
             break
@@ -86,10 +66,10 @@ def stringProcess(conn, connList):
             lenOfWord = len(lastWord)
 
         if msg.lower().strip() != 'bye':
-            sendMsg(flag, connList, buffer)
-            flag += 1
-            if flag == len(connList):
-                flag = 1
+            sendMsg(node, connList, buffer)
+            node += 1
+            if node == len(connList):
+                node = 1
         
         buffer = lastWord
         lastWord = ''
@@ -101,33 +81,40 @@ def newClientSocketHandler(cli, ip):
     if len(connList) != 0:
         connList.remove(cli)
 
-# def newClientSocketHandler(cli, ip):
-#     print('Connection accepted from:', ip)
-#     msg = ''
-#     while True:
-#         msg = cli.recv(256).decode()
-#         if not msg:
-#             break
-#         print(ip, "msg:", msg)
-#         for x in range(1, len(connList)):
-#             connList[x].send(msg.encode())
-
-#     if len(connList) != 0:
-#         connList.remove(cli)
-
+def identifySender(conn, addr):
+    try:
+        msg = conn.recv(20).lower().strip().decode()
+        if msg == 'sender':
+            print('Connection accepted from sender:', addr)
+            return 0
+    except socket.error as sockErr:
+        print('Error: %s' % sockErr)
+        return 1
+        
 def mainProg():
     hostIp, hostPort = inputAddr()
     srvSock = serverInit(hostIp, hostPort)
+    idx = 1
+    sender_id = 1
+
     try:
         while True:
             conn, addr = acceptConn(srvSock)
-            # connAccount(srvSock, conn, addr)
-            connAccount(conn, addr)
-            # 'Create thread for the newly connected client'
+            conn.settimeout(5)
+            sender_id = identifySender(conn, addr)
+            conn.settimeout(None)
+            if sender_id != 0:
+                connAccount(idx, conn)
+            else:
+                connAccount(sender_id, conn)
+            idx += 1
+            'Create thread for the newly connected client'
             thread = Thread(target=newClientSocketHandler, args=(conn, addr))
             thread.start()
+            print(connList)
     except KeyboardInterrupt:
         srvSock.close()
+        print('')
 
 if __name__ == '__main__':
     mainProg()
