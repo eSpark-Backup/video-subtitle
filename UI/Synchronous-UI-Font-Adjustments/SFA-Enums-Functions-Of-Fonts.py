@@ -1,6 +1,16 @@
+import json
 import tkinter as tk
 import tkinter.font as tkfont
 from enum import Enum
+
+# [Demo] Received Font Configuration in JSON Format:
+recvJSON =  '{ "f_type":"3", "f_size":3, "f_color":"1", "f_style":"2", "f_weight":"2" }'
+
+# parse recvJSON:
+fC = json.loads(recvJSON)
+
+# the result fC(fontConfig) is a Python dictionary:
+print(fC["f_type"], fC["f_size"], fC["f_color"], fC["f_style"], fC["f_weight"])
 
 #********************* Font Enums & Functions *********************
 class FontStyle(Enum):
@@ -48,11 +58,11 @@ window.geometry("1920x640")
 frame = tk.Frame(master=window, width=1920, height=640)
 frame.pack()
 
-fontFamily = FontFamily(1)
-fontSize = FontSize(3)
-fontColor = FontColor(1)
-fontStyle = FontStyle(2)
-fontWeight = FontWeight(2)
+fontSize =      FontSize(   int(fC["f_size"])    )
+fontColor =     FontColor(  int(fC["f_color"])   )
+fontStyle =     FontStyle(  int(fC["f_style"])   )
+fontWeight =    FontWeight( int(fC["f_weight"])  )
+fontFamily =    FontFamily( int(fC["f_type"])    )
 
 # selFont will be used as the selected font for the UI-Display, it is configured with the selected font configurations
 selFont = tkfont.Font(family=FontFamilyStr(fontFamily.name), size=FontSizeStr(fontSize.name), slant=fontStyle.name, weight=fontWeight.name)
@@ -76,3 +86,4 @@ UIDemoLabel.pack()
 
 # Run the main loop
 window.mainloop()
+
