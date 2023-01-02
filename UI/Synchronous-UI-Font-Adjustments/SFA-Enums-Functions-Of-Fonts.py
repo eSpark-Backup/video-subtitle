@@ -3,6 +3,13 @@ import tkinter.font as tkfont
 from enum import Enum
 
 #********************* Font Enums & Functions *********************
+class FontColor(Enum):
+    BLACK   = 1
+    WHITE   = 2
+    RED     = 3
+    BLUE    = 4
+    GREEN   = 5           
+
 class FontSize(Enum):
     S_100 = 1
     S_120 = 2
@@ -35,19 +42,25 @@ frame.pack()
 
 fontFamily = FontFamily(2)
 fontSize = FontSize(3)
+fontColor = FontColor(1)
 
-selFontFamily = FontFamilyStr(fontFamily.name)
-selFontSize = FontSizeStr(fontSize.name)
+# selFont will be used as the selected font for the UI-Display, it is configured with the selected font configurations
+selFont = tkfont.Font(family=FontFamilyStr(fontFamily.name), size=FontSizeStr(fontSize.name))
 
-print("Font Family: " + selFontFamily)
-print("Font Size: " + selFontSize)
-
-selFont = tkfont.Font(family=selFontFamily, size=selFontSize)
+#Printing the Font Configurations:
+print("Font Family: " + selFont.cget('family'))
+print("Font Size: " + str( selFont.cget('size') ) )
+print("Font Color: " + fontColor.name)
 
 # Create a label to display the selected font
-fontDemoLabel= tk.Label(master=frame, text="Selected Font", font=selFont)
+UIDemoLabel= tk.Label(master=frame, text="Selected Font")
+
+# Configuring UI font with the selected configuration
+UIDemoLabel.config(font=selFont)
+UIDemoLabel.config(fg=fontColor.name)
+
 # Pack the widgets into the window
-fontDemoLabel.pack()
+UIDemoLabel.pack()
 
 # Run the main loop
 window.mainloop()
