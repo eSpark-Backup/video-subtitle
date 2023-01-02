@@ -3,6 +3,14 @@ import tkinter.font as tkfont
 from enum import Enum
 
 #********************* Font Enums & Functions *********************
+class FontStyle(Enum):
+    roman   = 1
+    italic  = 2
+
+class FontWeight(Enum):
+    normal  = 1
+    bold    = 2
+
 class FontColor(Enum):
     BLACK   = 1
     WHITE   = 2
@@ -40,17 +48,21 @@ window.geometry("1920x640")
 frame = tk.Frame(master=window, width=1920, height=640)
 frame.pack()
 
-fontFamily = FontFamily(2)
+fontFamily = FontFamily(1)
 fontSize = FontSize(3)
 fontColor = FontColor(1)
+fontStyle = FontStyle(2)
+fontWeight = FontWeight(2)
 
 # selFont will be used as the selected font for the UI-Display, it is configured with the selected font configurations
-selFont = tkfont.Font(family=FontFamilyStr(fontFamily.name), size=FontSizeStr(fontSize.name))
+selFont = tkfont.Font(family=FontFamilyStr(fontFamily.name), size=FontSizeStr(fontSize.name), slant=fontStyle.name, weight=fontWeight.name)
 
 #Printing the Font Configurations:
 print("Font Family: " + selFont.cget('family'))
 print("Font Size: " + str( selFont.cget('size') ) )
 print("Font Color: " + fontColor.name)
+print("Font Style: " + fontStyle.name)
+print("Font Weight: " + fontWeight.name)
 
 # Create a label to display the selected font
 UIDemoLabel= tk.Label(master=frame, text="Selected Font")
