@@ -2,7 +2,7 @@ import socket
 
 def inputAddr():
     hostIp = input("Enter IP address: ")
-    hostPort = input("Enter port no. 1024: ")
+    hostPort = input("Enter port no. > 1024: ")
     return hostIp, hostPort
 
 def makeConn(hostIp, hostPort):
@@ -10,16 +10,17 @@ def makeConn(hostIp, hostPort):
     cliSocket.settimeout(5)
     try:
         cliSocket.connect((hostIp, int(hostPort)))
-    except cliSocket.error as sockErr:
+    except socket.error as sockErr:
         print("Error: %s" % sockErr)
         exit()
 
+    cliSocket.settimeout(None)
     print('The client has connected to the server.')
-    # cliSocket.send('sender'.encode())
 
     return cliSocket
 
 def sendMsg(cliSock):
+    cliSock.send('sender'.encode())
     print('Type your message')
     msg = ''
     while msg.lower().strip() != 'bye':
@@ -34,6 +35,6 @@ def mainProg():
     cliSock = makeConn(hostIp, hostPort)
     sendMsg(cliSock)
     closeConn(cliSock)
-
+    
 if __name__ == '__main__':
     mainProg()
