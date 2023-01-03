@@ -1,39 +1,15 @@
-import socket
-
-def inputAddr():
-    hostIp = input("Enter IP address: ")
-    hostPort = input("Enter port no. 1024: ")
-    return hostIp, hostPort
-
-def makeConn(hostIp, hostPort):
-    cliSocket = socket.socket()
-    cliSocket.settimeout(5)
-    try:
-        cliSocket.connect((hostIp, int(hostPort)))
-    except socket.error as sockErr:
-        print("Error: %s" % sockErr)
-        exit()
-
-    cliSocket.settimeout(None)
-    print('The client has connected to the server.')
-    print('Listening to server for the messages...')
-
-    return cliSocket
-
-def listen(cliSock):
-    msg = ''
-    while msg.lower().strip() != 'bye':
-        msg = cliSock.recv(256).decode()
-        print("Msg.:", msg)
-
-def closeConn(cliSock):
-    cliSock.close()
+import sys
+sys.path.insert(1, "../utility/")
+import clientUtility as utils
 
 def mainProg():
-    hostIp, hostPort = inputAddr()
-    cliSock = makeConn(hostIp, hostPort)
-    listen(cliSock)
-    closeConn(cliSock)
+    hostIp, hostPort = utils.inputAddr()
+    cliSock = utils.makeConn(hostIp, hostPort)
+    try:
+        utils.listen(cliSock)
+        utils.closeConn(cliSock)
+    except KeyboardInterrupt:
+        utils.closeConn(cliSock)
 
 if __name__ == '__main__':
     mainProg()
