@@ -14,7 +14,7 @@ if LOG_DISABLE:
 numOfClients = 5
 SERVER_SOCK_TIMEOUT = 5
 # addrList = []
-connList = []
+connList = [socket.socket()] * 5
 
 def inputAddr():
     hostIp = input("Enter IP address: ")
@@ -47,10 +47,12 @@ def serverClose(srvSock):
     print("\nServer closed")
 
 def connAccount(ind, client):
-    connList.insert(ind, client)
+    connList[ind] = client
 
 def sendMsg(node, connList, buffer):
-    connList[node].send(buffer.encode())
+    _, port = connList[node].getsockname()
+    if port != 0:
+        connList[node].send(buffer.encode())
 
 def stringProcess(conn, connList):
     chunkSize = 21
@@ -86,11 +88,10 @@ def stringProcess(conn, connList):
         lastWord = ''
 
 'New Client Thread'
-def newClientSocketHandler(cli, ip):
+def newClientSocketHandler(cli, ip, idx):
     log.info(' Connection accepted from:' + str(ip))
     stringProcess(cli, connList)
-    if len(connList) != 0:
-        connList.remove(cli)
+    connList[idx] = socket.socket()
 
 def identifySender(conn, addr):
     try:
@@ -100,4 +101,26 @@ def identifySender(conn, addr):
             return 0
     except socket.error as sockErr:
         log.error(' %s' % sockErr)
+        return -1
+
+def switchCase(msg):
+    if msg == '1':
         return 1
+    elif msg == '2':
+        return 2
+    elif msg == '3':
+        return 3
+    elif msg == '4':
+        return 4
+    else:
+        return -1
+
+def identifylistener(conn, addr):
+    try:
+        msg = conn.recv(20).lower().strip().decode()
+        case = switchCase(msg)
+        # log.debug(' Connection accepted from listener:' + str(addr))
+        return case
+    except socket.error as sockErr:
+        log.error(' %s' % sockErr)
+        return -1

@@ -12,9 +12,14 @@ if LOG_DISABLE:
 CONN_TIMEOUT = 5
 MSG_SIZE = 256
 
+def inputListener():
+    listenerId = input('Enter listener id: ')
+    return listenerId
+
 def inputAddr():
     hostIp = input("Enter server's IP address: ")
     hostPort = input("Enter server's port no.: ")
+    
     return hostIp, hostPort
 
 def makeConn(hostIp, hostPort):
@@ -39,7 +44,8 @@ def sendMsg(cliSock):
         msg = input('-> ') + ' '
         cliSock.send(msg.encode())
         
-def listen(cliSock):
+def listen(cliSock, listenerId):
+    cliSock.send(listenerId.encode())
     msg = ''
     while msg.lower().strip() != 'bye':
         msg = cliSock.recv(MSG_SIZE).decode()
