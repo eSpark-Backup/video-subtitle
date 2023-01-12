@@ -1,6 +1,8 @@
 import socket
 from threading import Thread
 import logging as log
+import json
+import uiUtility as uiUtils
 
 LOG_DISABLE = 1
 LOG_LEVEL = log.INFO
@@ -11,15 +13,24 @@ if LOG_DISABLE:
     log.disable(log.INFO)
 
 # Globals
-numOfClients = 5
 SERVER_SOCK_TIMEOUT = 5
 # addrList = []
-connList = [socket.socket()] * 5
+numOfClients = 0
+connList = []
+msgLen = 0
+# configHolder = {"fontSize": fontSize, "fontType": fontType, "fontColor": fontColor, "fontStyle": fontStyle, "fontWeight": fontWeight}
+configHolder = {}
 
 def inputAddr():
     hostIp = input("Enter IP address: ")
     hostPort = input("Enter port no. 1024: ")
     return hostIp, hostPort
+
+def getClients():
+    global connList
+    numOfClients = input("Enter no. of clients: ")
+    connList = [socket.socket()] * int(numOfClients)
+    # return connList
 
 def serverInit(hostIp, hostPort):
     serverSocket = socket.socket()
@@ -55,9 +66,11 @@ def sendMsg(node, connList, buffer):
         connList[node].send(buffer.encode())
 
 def stringProcess(conn, connList):
-    chunkSize = 21
+    global msgLen
+    chunkSize = msgLen
+    print('chunkSize: ', chunkSize)
     lenOfWord = 0
-    buffer = '' * 21
+    buffer = '' * int(chunkSize)
     node = 1
     lastWord = ''
 
@@ -87,10 +100,48 @@ def stringProcess(conn, connList):
         buffer = lastWord
         lastWord = ''
 
+def getConfigs():
+    fontSize = input('Enter font size: ')
+    fontType = input('Enter font type: ')
+    fontColor = input('Enter font color: ')
+    fontStyle = input('Enter font style: ')
+    fontWeight = input('Enter font weight: ')
+
+    return fontSize, fontType, fontColor, fontStyle, fontWeight
+
+def createConfig(fontSize, fontType, fontColor, fontStyle, fontWeight):
+    global configHolder
+    configHolder = {"fontSize": fontSize, "fontType": fontType, "fontColor": fontColor, "fontStyle": fontStyle, "fontWeight": fontWeight}
+   
+def setupConfig():
+    fontSize, fontType, fontColor, fontStyle, fontWeight = getConfigs()
+    createConfig(fontSize, fontType, fontColor, fontStyle, fontWeight)
+   
+def getMsgLen():
+    global configHolder
+    global msgLen
+
+    window, frame = uiUtils.createWindow()
+    selFont = uiUtils.fontSelection(configHolder)
+    msgLen = uiUtils.characterLimit(frame, selFont)
+    uiUtils.destroyWindow(window)
+    
+def createJson(configHolder):
+    jsonObj = json.dumps(configHolder)
+    return jsonObj
+
+def sendConfigMsg(cli):
+    global configHolder
+    jsonObj = createJson(configHolder)
+    cli.send(jsonObj.encode())
+
 'New Client Thread'
+'Pass the output of getMsgLen()'
 def newClientSocketHandler(cli, ip, idx):
     log.info(' Connection accepted from:' + str(ip))
+    # sendConfigMsg(cli)
     stringProcess(cli, connList)
+    cli.close()
     connList[idx] = socket.socket()
 
 def identifySender(conn, addr):

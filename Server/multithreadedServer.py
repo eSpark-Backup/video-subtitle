@@ -4,6 +4,10 @@ import serverUtility as utils
 
 def mainProg():
     hostIp, hostPort = utils.inputAddr()
+    # utils.connList = utils.getClients()
+    utils.getClients()
+    utils.setupConfig()
+    utils.getMsgLen()
     srvSock = utils.serverInit(hostIp, hostPort)
     idx = 1
     sender_id = -1

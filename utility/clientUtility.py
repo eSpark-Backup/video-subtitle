@@ -44,6 +44,9 @@ def sendMsg(cliSock):
         msg = input('-> ') + ' '
         cliSock.send(msg.encode())
         
+def getConfig(cliSock):
+    msg = cliSock.recv(MSG_SIZE).decode()
+
 def listen(cliSock, listenerId):
     cliSock.send(listenerId.encode())
     msg = ''
