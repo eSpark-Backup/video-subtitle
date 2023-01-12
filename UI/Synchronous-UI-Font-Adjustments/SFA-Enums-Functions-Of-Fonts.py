@@ -1,10 +1,13 @@
 import json
+import PIL
+import time
 import tkinter as tk
 import tkinter.font as tkfont
+from PIL import ImageTk, Image
 from enum import Enum
 
 # [Demo] Received Font Configuration in JSON Format:
-recvJSON =  '{ "f_type":"3", "f_size":3, "f_color":"1", "f_style":"2", "f_weight":"2" }'
+recvJSON =  '{ "f_type":"3", "f_size":1, "f_color":"1", "f_style":"2", "f_weight":"2" }'
 
 # parse recvJSON:
 fC = json.loads(recvJSON)
@@ -54,9 +57,22 @@ def FontFamilyStr(name):
 # Create the main Window &  Frame
 window = tk.Tk()
 window.title("Font Selection")
-window.geometry("1920x640")
-frame = tk.Frame(master=window, width=1920, height=640)
+window.geometry("1920x515")
+#window.attributes('-fullscreen', True)
+frame = tk.Frame(master=window, width=1920, height=515)
 frame.pack()
+frame.place(anchor='center', relx=0.5, rely=0.5)
+
+#******************** LOGO Display ********************
+# Create an object of tkinter ImageTk
+img = ImageTk.PhotoImage(Image.open("eSpark.png"))
+# Create a Label Widget to display the Logo-Image
+imgLabel = tk.Label(frame, image=img)
+imgLabel.pack()
+window.update()
+time.sleep(3)
+imgLabel.destroy()
+#******************** LOGO Display ********************
 
 fontSize =      FontSize(   int(fC["f_size"])    )
 fontColor =     FontColor(  int(fC["f_color"])   )
@@ -74,16 +90,40 @@ print("Font Color: " + fontColor.name)
 print("Font Style: " + fontStyle.name)
 print("Font Weight: " + fontWeight.name)
 
+# Finding Character Limit, by referencing an alphabet & calculating the average number of charaters, 
+# which can be displayed on the screen by the given font configuration;
+charLimit = 0
+sampleCharLen = selFont.measure("M")
+print(sampleCharLen)
+
+# Displaying Text on a Label & figuring out the Characters Limit
+labelCharLimit = tk.Label(master=frame, text="a", fg="white", font=selFont)
+for x in range(100):
+    if(x*sampleCharLen <= 1920) :
+        labelCharLimit.place(x=x*sampleCharLen, y=0)
+    else :
+        charLimit = x-1
+        labelCharLimit.destroy()
+        break
+print("Character Limit = " + str(charLimit)) #str(x-1)
+# Now, we have a value for Character Limit which we can display on each client!
+
 # Create a label to display the selected font
-UIDemoLabel= tk.Label(master=frame, text="Selected Font")
+UIDemoLabel= tk.Label(master=frame)
 
 # Configuring UI font with the selected configuration
 UIDemoLabel.config(font=selFont)
 UIDemoLabel.config(fg=fontColor.name)
 
 # Pack the widgets into the window
-UIDemoLabel.pack()
+UIDemoLabel.pack(side=tk.TOP, pady=200)
 
 # Run the main loop
-window.mainloop()
+while True:
+    UIDemoLabel.config(text="Selected Font")
+    window.update()
+    time.sleep(3)
 
+    UIDemoLabel.config(text="Testing 123")
+    window.update()
+    time.sleep(3)
