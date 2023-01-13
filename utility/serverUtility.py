@@ -3,22 +3,23 @@ from threading import Thread
 import logging as log
 import json
 import uiUtility as uiUtils
+import time
 
 LOG_DISABLE = 1
-LOG_LEVEL = log.INFO
+LOG_LEVEL = log.DEBUG
 LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 
 log.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
 if LOG_DISABLE:
-    log.disable(log.INFO)
+    log.disable(LOG_LEVEL)
 
 # Globals
-SERVER_SOCK_TIMEOUT = 5
-# addrList = []
+SERVER_SOCK_TIMEOUT_SEC = 5
+ID_SIZE = 10
+
 numOfClients = 0
-connList = []
 msgLen = 0
-# configHolder = {"fontSize": fontSize, "fontType": fontType, "fontColor": fontColor, "fontStyle": fontStyle, "fontWeight": fontWeight}
+connList = []
 configHolder = {}
 
 def inputAddr():
@@ -30,11 +31,11 @@ def getClients():
     global connList
     numOfClients = input("Enter no. of clients: ")
     connList = [socket.socket()] * int(numOfClients)
-    # return connList
 
 def serverInit(hostIp, hostPort):
+    global numOfClients
     serverSocket = socket.socket()
-    serverSocket.settimeout(SERVER_SOCK_TIMEOUT)
+    serverSocket.settimeout(SERVER_SOCK_TIMEOUT_SEC)
     try:
         serverSocket.bind((hostIp, int(hostPort)))
     except socket.error as sockErr:
@@ -76,6 +77,9 @@ def stringProcess(conn, connList):
 
     while True:
         msg = conn.recv(chunkSize - lenOfWord).decode()
+        # test purpose
+        time.sleep(0.5)
+
         if msg.lower().strip() == 'bye':
             for x in range(1, len(connList)):
                 sendMsg(x, connList, msg)
@@ -126,27 +130,26 @@ def getMsgLen():
     msgLen = uiUtils.characterLimit(frame, selFont)
     uiUtils.destroyWindow(window)
     
-def createJson(configHolder):
+def marshalConfig(configHolder):
     jsonObj = json.dumps(configHolder)
     return jsonObj
 
 def sendConfigMsg(cli):
     global configHolder
-    jsonObj = createJson(configHolder)
+    jsonObj = marshalConfig(configHolder)
     cli.send(jsonObj.encode())
 
 'New Client Thread'
-'Pass the output of getMsgLen()'
 def newClientSocketHandler(cli, ip, idx):
     log.info(' Connection accepted from:' + str(ip))
-    # sendConfigMsg(cli)
+    sendConfigMsg(cli)
     stringProcess(cli, connList)
     cli.close()
     connList[idx] = socket.socket()
 
 def identifySender(conn, addr):
     try:
-        msg = conn.recv(20).lower().strip().decode()
+        msg = conn.recv(ID_SIZE).lower().strip().decode()
         if msg == 'sender':
             log.debug(' Connection accepted from sender:' + str(addr))
             return 0
@@ -167,10 +170,10 @@ def switchCase(msg):
         return -1
 
 def identifylistener(conn, addr):
+    _ = addr
     try:
-        msg = conn.recv(20).lower().strip().decode()
+        msg = conn.recv(ID_SIZE).lower().strip().decode()
         case = switchCase(msg)
-        # log.debug(' Connection accepted from listener:' + str(addr))
         return case
     except socket.error as sockErr:
         log.error(' %s' % sockErr)

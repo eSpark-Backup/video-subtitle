@@ -1,5 +1,7 @@
 import socket
 import logging as log
+import json
+import uiUtility as uiUtils
 
 LOG_DISABLE = 1
 LOG_LEVEL = log.INFO
@@ -11,6 +13,9 @@ if LOG_DISABLE:
 
 CONN_TIMEOUT = 5
 MSG_SIZE = 256
+CONFIG_MSG_SIZE = 256
+
+listenerConfig = {}
 
 def inputListener():
     listenerId = input('Enter listener id: ')
@@ -44,15 +49,34 @@ def sendMsg(cliSock):
         msg = input('-> ') + ' '
         cliSock.send(msg.encode())
         
-def getConfig(cliSock):
-    msg = cliSock.recv(MSG_SIZE).decode()
+def unmarshalConfig(configMsg):
+    global listenerConfig
+    listenerConfig = json.loads(configMsg)
 
-def listen(cliSock, listenerId):
-    cliSock.send(listenerId.encode())
+def getConfig(cliSock):
+    configMsg = cliSock.recv(CONFIG_MSG_SIZE).decode('utf-8')
+    unmarshalConfig(configMsg)
+
+def setupUi():
+    global listenerConfig
+    window, frame = uiUtils.createWindow()
+    selFont = uiUtils.fontSelection(listenerConfig)
+    charLimit = uiUtils.characterLimit(frame, selFont)
+    textLabel = uiUtils.createLabelText(frame, selFont)
+    
+    return window, charLimit, textLabel
+
+def listen(cliSock, recvLen, window, textLabel):
     msg = ''
     while msg.lower().strip() != 'bye':
-        msg = cliSock.recv(MSG_SIZE).decode()
+        msg = cliSock.recv(recvLen).decode()
         print("Msg.:", msg)
+        textLabel.config(text=msg)
+        window.update()
+
+def sendIdentity(cliSock, listenerId):
+    cliSock.send(listenerId.encode())
+    # add failure check
 
 def closeConn(cliSock):
     cliSock.close()

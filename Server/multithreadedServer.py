@@ -4,24 +4,20 @@ import serverUtility as utils
 
 def mainProg():
     hostIp, hostPort = utils.inputAddr()
-    # utils.connList = utils.getClients()
     utils.getClients()
     utils.setupConfig()
     utils.getMsgLen()
     srvSock = utils.serverInit(hostIp, hostPort)
-    idx = 1
-    sender_id = -1
-    listenerId = -1
-
+    
     try:
         while True:
             conn, addr = utils.acceptConn(srvSock)
-            conn.settimeout(utils.SERVER_SOCK_TIMEOUT)
+            conn.settimeout(utils.SERVER_SOCK_TIMEOUT_SEC)
             listenerId = utils.identifylistener(conn, addr)
             conn.settimeout(None)
             
             if listenerId < 0:
-                conn.settimeout(utils.SERVER_SOCK_TIMEOUT)
+                conn.settimeout(utils.SERVER_SOCK_TIMEOUT_SEC)
                 sender_id = utils.identifySender(conn, addr)
                 conn.settimeout(None)
                 if sender_id < 0:

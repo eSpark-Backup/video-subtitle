@@ -6,8 +6,13 @@ def mainProg():
     hostIp, hostPort = utils.inputAddr()
     listenerId = utils.inputListener()
     cliSock = utils.makeConn(hostIp, hostPort)
+    utils.sendIdentity(cliSock, listenerId)
+    utils.getConfig(cliSock)
+    window, msgLen, textLabel = utils.setupUi()
+    window.update()
+
     try:
-        utils.listen(cliSock, listenerId)
+        utils.listen(cliSock, msgLen, window, textLabel)
         utils.closeConn(cliSock)
     except KeyboardInterrupt:
         utils.closeConn(cliSock)
