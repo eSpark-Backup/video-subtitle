@@ -79,7 +79,7 @@ def characterLimit(frame, font):
                 charLimit = x-1
                 labelCharLimit.destroy()
                 break
-    print("Character Limit = " + str(charLimit))
+    # print("Character Limit = " + str(charLimit))
     return int(charLimit)
     # Now, we have a value for Character Limit which we can display on each client!
 

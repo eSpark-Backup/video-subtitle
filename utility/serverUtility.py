@@ -70,7 +70,6 @@ def sendMsg(node, connList, buffer):
 def stringProcess(conn, connList):
     global msgLen
     chunkSize = msgLen
-    print('chunkSize: ', chunkSize)
     lenOfWord = 0
     buffer = '' * int(chunkSize)
     node = 1
