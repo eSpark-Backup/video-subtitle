@@ -65,16 +65,20 @@ def characterLimit(frame, font):
     # which can be displayed on the screen by the given font configuration;
     charLimit = 0
     sampleCharLen = font.measure("0")
+    charOffset = font.measure("W")
 
     # Displaying Text on a Label & figuring out the Characters Limit
     labelCharLimit = tk.Label(master=frame, text="0", fg="white", font=font)
     for x in range(100):
-        if(x*sampleCharLen <= 1920) :
-            labelCharLimit.place(x=x*sampleCharLen, y=0)
-        else :
-            charLimit = x-1
-            labelCharLimit.destroy()
-            break
+        if(x*sampleCharLen < charOffset):
+            continue
+        else:
+            if(x*sampleCharLen <= 1920 - 2*charOffset) :
+                labelCharLimit.place(x=x*sampleCharLen, y=0)
+            else :
+                charLimit = x-1
+                labelCharLimit.destroy()
+                break
     print("Character Limit = " + str(charLimit))
     return int(charLimit)
     # Now, we have a value for Character Limit which we can display on each client!
