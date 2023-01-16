@@ -16,7 +16,7 @@ if LOG_DISABLE:
 # Globals
 SERVER_SOCK_TIMEOUT_SEC = 5
 ID_SIZE = 10
-
+SENDER_CLIENT = 1
 numOfClients = 0
 msgLen = 0
 connList = []
@@ -24,13 +24,14 @@ configHolder = {}
 
 def inputAddr():
     hostIp = input("Enter IP address: ")
-    hostPort = input("Enter port no. 1024: ")
+    hostPort = input("Enter port no. > 1024: ")
     return hostIp, hostPort
 
 def getClients():
     global connList
-    numOfClients = input("Enter no. of clients: ")
-    connList = [socket.socket()] * int(numOfClients)
+    numOfClients = input("Enter no. of listeners: ")
+    numOfClients = int(numOfClients) + SENDER_CLIENT
+    connList = [socket.socket()] * numOfClients
 
 def serverInit(hostIp, hostPort):
     global numOfClients
