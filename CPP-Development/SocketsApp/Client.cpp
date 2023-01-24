@@ -9,7 +9,6 @@
 
 #define LOCAL_HOST "127.0.0.1"
 #define PORT 8080
-#define MSG "Hello From Client!"
  
 int main()
 {
@@ -39,11 +38,12 @@ int main()
         exit(1);
     }
 
-    send(sock, MSG, strlen(MSG), 0);
-    std::cout << "Message Sent" << std::endl;
-
-    read(sock, buffer, 1024);
-    std::cout << buffer << std::endl;
+    /* ------------- Client Receiving Message Streams ------------- */
+    do
+    {
+        read(sock, buffer, 1024);
+        std::cout << buffer << std::endl;
+    } while (*buffer != '*');
  
     // closing the connected socket
     close(clientFD);
