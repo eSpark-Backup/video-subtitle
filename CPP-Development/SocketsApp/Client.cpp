@@ -8,7 +8,8 @@
 #include <unistd.h>
 
 #define LOCAL_HOST "127.0.0.1"
-#define PORT 8080
+#define PC_HOST "192.168.18.56"
+#define PORT 5050
  
 int main()
 {
@@ -26,7 +27,7 @@ int main()
     }
  
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+    serverAddr.sin_addr.s_addr = inet_addr(PC_HOST);
     serverAddr.sin_port = htons(PORT);
 
     /* ---------- CONNECTING CLIENT SOCKET TO SERVER SOCKET ----------*/
