@@ -1,7 +1,12 @@
+import tkinter as tk
+import tkinter.font as tkfont
+from PIL import ImageTk, Image
+
 import socket
 import logging as log
 import json
 import uiUtility as uiUtils
+
 
 LOG_DISABLE = 1
 LOG_LEVEL = log.INFO
@@ -67,6 +72,16 @@ def setupUi():
     return window, charLimit, textLabel
 
 def listen(cliSock, recvLen, window, textLabel):
+    # Create an Icon to display on the bottom-right corner
+    loadImg=Image.open('Logo.png')
+    # Resize the image in the given (width, height)
+    resizeImg=loadImg.resize((200  , 100))
+    # Conver the image in TkImage
+    icon =ImageTk.PhotoImage(resizeImg)
+    # Create a Label Widget to display the text or Image
+    label = tk.Label(window, image = icon, bg="#141312")
+    label.place(relx= 1, rely = 0.9 , anchor='se')
+
     msg = ''
     while msg.lower().strip() != 'bye':
         msg = cliSock.recv(recvLen).decode()

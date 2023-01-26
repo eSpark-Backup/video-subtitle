@@ -12,6 +12,7 @@ class FontFamily(Enum):
     Helvetica           = 2
     Verdana             = 3
     Times_New_Roman     = 4
+    Futura              = 5
 
 class FontSize(Enum):
     S_100 = 1
@@ -50,8 +51,9 @@ def createWindow():
     window = tk.Tk()
     window.title("Font Selection")
     window.geometry("1920x515")
+    window.configure(bg="#141312")
     #window.attributes('-fullscreen', True)
-    frame = tk.Frame(master=window, width=1920, height=515)
+    frame = tk.Frame(master=window, width=1920, height=515, bg="#141312")
     frame.pack()
     frame.place(anchor='center', relx=0.5, rely=0.5)
 
@@ -101,7 +103,7 @@ def createLabelText(frame, selFont):
 
     # Configuring UI font with the selected configuration
     textLabel.config(font=selFont)
-    textLabel.config(fg="BLACK")
+    textLabel.config(fg="WHITE", bg="#141312")
 
     # Pack the widgets into the window
     textLabel.pack(side=tk.TOP, pady=200)
