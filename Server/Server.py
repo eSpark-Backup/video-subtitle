@@ -1,60 +1,49 @@
 import socket
+import tkinter as tk
+from tkinter import * 
+from tkinter import font
+import pysrt
+import time
 
-def serverInit():
-    # host = socket.gethostname()
-    hostIp = input('Enter IP address: ')
-    hostPort = input('Enter the port no. > 1024: ')
-    print("Hosting on: " + hostIp + ":" + hostPort)
+subs = pysrt.open('Windfall.srt', encoding='iso-8859-1')
+sub_size = len(subs)
+window = tk.Tk()
 
-    serverSocket = socket.socket()
-    serverSocket.bind((hostIp, int(hostPort)))
-    return serverSocket
 
-def serverListen(serverSocket):
-    numOfClients = 1
-    serverSocket.listen(numOfClients)
-    print("Waiting for connection request..")
-    conn, addr = serverSocket.accept()
-    print("Connection request from: " + str(addr))
-    return conn
+HOST = "192.168.18.150"  # The server's hostname or IP address
+PORT = 65432  # The port used by the server
+PORT2 = 50000
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-def serverClose(conn):
-    conn.close()
-    print("Connection closed")
-
-def stringProcess(conn):
-    chunkSize = 21
-    lenOfWord = 0
-    buffer = '' * 21
-    flag = 0
-    lastWord = ''
-
-    while True:
-        recvData = conn.recv(chunkSize - lenOfWord).decode()
-        if not recvData:
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    conn, addr = s.accept()
+    server_socket.bind((HOST, PORT2))
+    server_socket.listen()
+    conn2,addr2 = server_socket.accept()
+    with conn:
+        while True:
+            for i in range(0,sub_size):
+                sub = subs[i]
+                result = (sub.text).replace('\n','').replace('-','')
+                fnt = font.Font(family="Helvetica", size=40)
+                width = fnt.measure(result)
+                time_delay = (sub.end - sub.start).seconds
+                if width > 1250:
+                    split_result= result.split()
+                    middle_index=len(split_result)//2
+                    str1=split_result[:middle_index]
+                    str2=split_result[middle_index:]
+                    str1 = ' '.join(str1) 
+                    str2 = ' '.join(str2)  
+                    conn.sendall(str1.encode())
+                    conn2.sendall(str2.encode())
+                    time.sleep(time_delay)
+                else:
+                    conn.sendall(result.encode())
+                    conn2.sendall(b"    ")
+                    time.sleep(time_delay)
+            conn.sendall(b'END')
+            conn2.sendall(b"")
             break
-        buffer += recvData
-        
-        if buffer[-1] != ' ':
-            lastWord = buffer.split()[-1]
-            buffer = buffer.rsplit(' ', 1)[0]
-            lenOfWord = len(lastWord)
-
-        if flag == 0:
-            print(("Msg.: ") + str(buffer) + ' | ')
-            flag = 1
-        else:
-            print('      ' + str(buffer))
-            flag = 0
-
-        buffer = lastWord
-        lastWord = ''
-
-def mainProgram():
-    serverSocket = serverInit()    
-    connection = serverListen(serverSocket)
-    stringProcess(connection)
-    serverClose(connection)
-
-if __name__ == '__main__':
-    mainProgram()
