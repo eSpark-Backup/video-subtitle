@@ -2,9 +2,13 @@ Project Directories
 ===================
 
 **Server:**  Contain server file.
+
 **Client:**  Contain 2 client files. client1 for 1st client and client2 for 2nd client.
+
 **Library:**  Contain srt parser header file. Must be include in server file.
+
 **Subtile:**  Contain subtitle file that need to be parse and display on LCD.
+
 **FLTK:**  Contain fltk library zip file. Need to extract on system and build it for gui.
 
 Setting FLTK library on linux for GUI
