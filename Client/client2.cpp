@@ -29,7 +29,7 @@ void guiScreen(){
 		box->labelfont(FL_HELVETICA);
 		box->labelsize(60);
 		box->labelcolor(FL_WHITE);
-		box->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
+		box->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 		box->redraw();
 		Fl::check();
 		memset(buffer, 0, sizeof(buffer));
