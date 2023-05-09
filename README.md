@@ -3,11 +3,9 @@ Project Directories
 
 **Server:**  Contain server file.
 
-**Client:**  Contain 2 client files. client1 for 1st client and client2 for 2nd client.
+**Client:**  Contain 1 client file.
 
 **Library:**  Contain srt parser header file. Must be include in server file.
-
-**Subtile:**  Contain subtitle file that need to be parse and display on LCD.
 
 **FLTK:**  Contain fltk library zip file. Need to extract on system and build it for gui.
 
@@ -31,6 +29,13 @@ Setting FLTK library on linux for GUI
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
+Setting VLC & it's library on linux 
+=============================
+
+    sudo apt-get install libvlc-dev
+    sudo apt-get install libvlccore-dev
+    sudo apt-get install vlc
+    sudo apt-get update && sudo apt-get upgrade
 
 
 Compiling Cpp files
@@ -38,12 +43,11 @@ Compiling Cpp files
 
 **Server:** 
 
-    g++ server.cpp -o server
+    g++ -o server server.cpp -lvlc
 
 **Client:** Make sure to place server's hostname in the clients cpp files.
 
     g++ client1.cpp -o client1 -lfltk
-    g++ client2.cpp -o client2 -lfltk
 
 
 For Server hostname visible on network
@@ -58,4 +62,3 @@ Running output files
 
     ./server
     ./client1
-    ./client2
