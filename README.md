@@ -62,3 +62,8 @@ Running output files
 
     ./server
     ./client1
+    
+Note
+=====
+
+**Place video and srt files in different location or folders and include their paths in server.cpp**
