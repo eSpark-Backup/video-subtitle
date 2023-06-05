@@ -47,7 +47,7 @@ Compiling Cpp files
 
 **Client:** Make sure to place server's hostname in the clients cpp files.
 
-    g++ client1.cpp -o client1 -lfltk
+    g++ client1.cpp -o client1 -lfltk -lX11
 
 
 For Server hostname visible on network

@@ -11,6 +11,7 @@
 #include <vector>
 #include <chrono> 
 #include <sstream>
+#include <X11/Xlib.h>
 
 using namespace std;
 
@@ -52,7 +53,15 @@ std::string stringOperation(string str){
 
 void guiScreen(){
 
-	Fl_Window *window = new Fl_Window(1280, 720, "Subtitle");
+	Display* display = XOpenDisplay(NULL);
+    Screen* screen = DefaultScreenOfDisplay(display);
+
+    int width = screen->width;
+    int height = screen->height;
+
+    XCloseDisplay(display);
+
+	Fl_Window *window = new Fl_Window(width, height, "Subtitle");
 	window->color(FL_BLACK);
 	window->fullscreen();
 	Fl_Box *box = new Fl_Box(0, 0, window->w()-10, window->h()-10, " ");
